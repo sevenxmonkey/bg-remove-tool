@@ -1,6 +1,9 @@
-# bg-remove-tool
+# Vue Canvas
+VueJS + PaperJS to create a simple, powerful canvas
 
-## Project setup
+<img src="static/final.png" alt="final image" width="1000px">
+
+## Set Up
 ```
 npm install
 ```
@@ -19,6 +22,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
