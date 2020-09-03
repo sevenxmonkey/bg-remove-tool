@@ -5,12 +5,10 @@
 </template>
 
 <script>
-// TODO: move all of this logic to master
-// packages
 const paper = require("paper");
 
 export default {
-  name: "Canvas",
+  name: "RectCanvas",
   props: ["canvasId"],
   data: () => ({
     paths: null,
@@ -20,6 +18,7 @@ export default {
   }),
   methods: {
     reset() {
+      
       this.scope.project.activeLayer.removeChildren();
     },
     createTool(scope) {
@@ -35,6 +34,8 @@ export default {
       return rect;
     },
     mouseDown() {
+      this.reset();
+      this.beginRect();
 
       let self = this;
       // create drawing tool
@@ -78,6 +79,9 @@ export default {
         [this.to.x, this.to.y],
       ]);
     },
+    beginRect(){
+      this.$emit("beginRect")
+    }
   },
   mounted() {
     this.scope = new paper.PaperScope();
@@ -89,7 +93,7 @@ export default {
 <style scoped>
 .rect-canvas {
   position: relative; 
-  z-index: 20
+  z-index: 10
 }
 .canvas-style {
   cursor: crosshair;

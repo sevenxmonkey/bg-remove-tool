@@ -1,60 +1,98 @@
 <template>
   <div class="workplace">
-    <ImageUpload ref="imgcanvas" />
-    <Canvas :canvas-id="'canvas-one'" ref="rectcanvas" @finishOneRect="handleFinish" />
     <div>
       <a-button>
         <input type="file" @change="onFileChange($event)" />
       </a-button>
-      <a-button @click.prevent="resetRect">Clear</a-button>
+      <a-button @click.prevent="clear">Clear</a-button>
       <a-button @click.prevent="adjust">Adjust</a-button>
+    </div>
+    <div style="position: relative">
+      <ImageUpload ref="imgcanvas" />
+      <BrushCanvas v-if="mode === 'brush'" :canvas-id="'canvas-two'" ref="brushcanvas" />
+      <RectCanvas
+        :canvas-id="'canvas-one'"
+        ref="rectcanvas"
+        @finishOneRect="handleFinish"
+        @beginRect="handleBeginRect"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import Canvas from "../components/Canvas";
+import RectCanvas from "../components/RectCanvas";
 import ImageUpload from "../components/ImageUpload";
+import BrushCanvas from "../components/BrushCanvas";
 
 export default {
   name: "Master",
   components: {
-    Canvas,
+    RectCanvas,
     ImageUpload,
+    BrushCanvas,
   },
   data() {
     return {
-      rects: [],
+      mask: {
+        rects: [],
+        brush: [],
+      },
       hasImage: false,
       image: null,
-      mode: "adjust"
+      mode: "rect",
     };
   },
   methods: {
     onFileChange(e) {
+      this.mode === "rect"
       this.rects = [];
       this.$refs.rectcanvas.reset();
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
-      this.$refs.imgcanvas.createImage(files[0], e);
+      this.$refs.imgcanvas.createImage(files[0]);
     },
-    resetRect() {
-      this.$refs.rectcanvas.reset();
-      this.rects = [];
+    clear() {
+      if (this.mode === "rect") {
+        this.$refs.rectcanvas.reset();
+        this.mask.rects = [];
+        this.$refs.imgcanvas.clipPath = "";
+      }else{
+        this.$refs.brushcanvas.reset();
+      }
+    },
+    handleBeginRect() {
+      this.$refs.imgcanvas.clipPath = "";
     },
     handleFinish(cor) {
-      this.rects.push(cor);
-      console.log(this.rects);
+      this.mask.rects = cor;
+      // console.log(this.mask);
+      const clipPath = this.computePer(cor);
+      this.$refs.imgcanvas.clipPath = clipPath;
+    },
+    computePer(cor) {
+      const x1 = Math.min(cor[0][0], cor[1][0]);
+      const x2 = Math.max(cor[0][0], cor[1][0]);
+      const y1 = Math.min(cor[0][1], cor[1][1]);
+      const y2 = Math.max(cor[0][1], cor[1][1]);
+
+      const a = String((y1 / 600) * 100);
+      const b = String((1 - x2 / 600) * 100);
+      const c = String((1 - y2 / 600) * 100);
+      const d = String((x1 / 600) * 100);
+
+      return `inset(${a}% ${b}% ${c}% ${d}%)`;
     },
     setImage: function (file) {
       this.hasImage = true;
       this.image = file;
       console.log(file);
     },
-    adjust(){
-      // console.log(this.$refs.imgcanvas.image)
-      console.log(this.rects);
-    }
+    adjust() {
+      this.$refs.imgcanvas.mode = "brush";
+      this.$refs.rectcanvas.reset();
+      this.mode = "brush";
+    },
   },
 };
 </script>

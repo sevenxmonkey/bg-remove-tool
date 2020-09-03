@@ -1,6 +1,24 @@
 <template>
   <div class="img-canvas">
-    <img :src="image" :style="{width:`${width}px`, left: `${left}px`, top: `${top}px`}" />
+    <div class="img-container" :style="{'clip-path': clipPath}">
+      <img
+        :src="image"
+        :style="{
+        width:`${width}px`, 
+        left: `${left}px`, 
+        top: `${top}px`} "
+      />
+    </div>
+    <div v-if="mode === 'rect'" class="img-container-2" style="opacity:0.5">
+      <img
+        :src="image"
+        :style="{
+        width:`${width}px`, 
+        left: `${left}px`, 
+        top: `${top}px`, 
+        position:'absolute'} "
+      />
+    </div>
   </div>
 </template>
 
@@ -14,16 +32,15 @@ export default {
       left: 0,
       top: 0,
       removebgAPI_KEY: "pHtR4KdPy6uavhUDkvtJSRZh",
+      clipPath: "",
+      mode: "rect"
     };
   },
   methods: {
-    createImage(file, event) {
+    createImage(file) {
       const self = this;
       var img = new Image();
       var reader = new FileReader();
-
-      console.log(file);
-      console.log(event);
 
       reader.onload = (e) => {
         self.image = e.target.result;
@@ -46,7 +63,7 @@ export default {
       } else {
         this.width = 600;
         this.left = 0;
-        this.top = 300 * (1 - h / w)
+        this.top = 300 * (1 - h / w);
       }
     },
   },
@@ -55,15 +72,19 @@ export default {
 
 <style scoped>
 .img-canvas {
-  background-color: rgb(255, 255, 255);
   width: 600px;
   height: 600px;
   position: absolute;
   z-index: 1;
   overflow: hidden;
 }
-
+.img-container {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(255, 255, 255);
+}
 img {
+  cursor: crosshair;
   width: 600px;
   display: block;
   position: relative;
