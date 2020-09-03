@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="rect-canvas">
     <canvas :id="canvasId" class="canvas-style" @mousedown="mouseDown" />
   </div>
 </template>
@@ -30,7 +30,7 @@ export default {
       scope.activate();
 
       var rect = new paper.Shape.Rectangle(from, to);
-      rect.strokeColor = "grey";
+      rect.strokeColor = "#F2F2F2";
       rect.strokeWidth = 3;
       return rect;
     },
@@ -87,12 +87,16 @@ export default {
 </script>
 
 <style scoped>
+.rect-canvas {
+  position: relative; 
+  z-index: 20
+}
 .canvas-style {
   cursor: crosshair;
-  width: 500px !important;
-  height: 500px !important;
-  border: 1px solid black;
+  width: 600px !important;
+  height: 600px !important;
+  border: 1px solid rgb(192, 192, 192);
   display: block;
-  /* margin: auto; */
+  
 }
 </style>
